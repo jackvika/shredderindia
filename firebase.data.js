@@ -67,7 +67,11 @@ function loadContactData() {
                         <button onclick="updateRemarks('${id}')" class="btn btn-primary mt-2">Update Remarks</button>
                     </td>
                 `;
-                dataContainer.appendChild(row);
+                // Show only contacts assigned to the logged-in user
+                const currentUser = document.getElementById('username').value;
+                if (contact.assignedTo === currentUser || (currentUser === 'vipul' && contact.assignedTo !== 'ajay')) {
+                    dataContainer.appendChild(row);
+                }
             }
             if (!dataContainer.hasChildNodes()) {
                 document.getElementById('noDataMessage').style.display = 'block';
@@ -84,14 +88,31 @@ window.updateRemarks = function(id) {
     const assignedTo = document.getElementById(`assignedTo-${id}`).value;
     const remarks = document.getElementById(`remarks-${id}`).value;
 
-    update(ref(db, `contacts/${id}`), {
-        assignedTo: assignedTo,
-        remarks: remarks
-    }).then(() => {
-        alert('Remarks updated successfully!');
-    }).catch((error) => {
-        alert('Error: ' + error.message);
-    });
+    if (assignedTo === 'ajay' && remarks) {
+        // If Ajay is currently assigned and remarks are added, move to Vipul
+        update(ref(db, `contacts/${id}`), {
+            assignedTo: 'vipul',
+            remarks: remarks
+        }).then(() => {
+            alert('Remarks updated and contact reassigned to Vipul!');
+            // Remove the contact from Ajay’s section and load the updated data
+            loadContactData();
+        }).catch((error) => {
+            alert('Error: ' + error.message);
+        });
+    } else if (assignedTo === 'vipul') {
+        // If Vipul is currently assigned, just update remarks
+        update(ref(db, `contacts/${id}`), {
+            remarks: remarks
+        }).then(() => {
+            alert('Remarks updated successfully!');
+        }).catch((error) => {
+            alert('Error: ' + error.message);
+        });
+    } else {
+        // Handle other cases if needed
+        alert('Error: Invalid assignment status');
+    }
 }
 
 document.getElementById('refreshBtn').addEventListener('click', loadContactData);
