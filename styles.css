@@ -704,6 +704,15 @@ footer .footer-link {
     text-decoration: none; /* Remove underline from links */
 }
 
+/* Adjust icon size for mobile devices */
+@media (max-width: 768px) {
+    .social-icons a {
+        font-size: 1.5em; /* Smaller size for mobile */
+        width: 40px; /* Smaller width for mobile */
+        height: 40px; /* Smaller height for mobile */
+    }
+}
+
 .social-icons a:hover {
     color: #FF6600; /* Change icon color on hover */
     transform: scale(1.2); /* Slightly enlarge on hover */
